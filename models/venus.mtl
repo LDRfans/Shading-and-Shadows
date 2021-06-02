@@ -1,0 +1,27 @@
+# 
+# Wavefront material file
+# Converted by 3D Exploration 1.7
+# XDimension Software, LLC
+# http://www.xdsoft.com/explorer/
+# 
+newmtl Material__25
+	 Ka 0.317647 0.317647 0.317647
+	 Kd 0.964706 0.972549 0.454902
+	 Ks 0.1 0.1 0.1
+	 illum 2
+	 Ns 10
+	 map_Kd METAL31.tga
+newmtl Material__27
+	 Ka 0.972549 0.0313726 0.894118
+	 Kd 0.133333 1 0.0196078
+	 Ks 0.678431 0.964706 0.976471
+	 illum 2
+	 Ns 1000
+	 map_Kd METAL48.tga
+newmtl Material__26
+	 Ka 0.0980392 0.0980392 0.0980392
+	 Kd 0.67451 0.0470588 0.0470588
+	 Ks 0.898039 0.898039 0.898039
+	 illum 2
+	 Ns 50
+	 map_Kd OPENGL.tga
