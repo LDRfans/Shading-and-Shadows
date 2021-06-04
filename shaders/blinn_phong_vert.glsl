@@ -13,21 +13,21 @@ vec4 Diffuse;
 vec4 Specular;
 
 
-	// Built-in variables and states that are useful:
-	//
-	// Light attributes:
-	// gl_LightSource[i].position	: vec4	: position of lightsource i (same below)
-	// gl_LightSource[i].ambient	: vec4	: ambient contribution
-	// gl_LightSource[i].diffuse	: vec4	: diffuse contribution
-	// gl_LightSource[i].specular	: vec4	: specular contribution
-	//
-	// Material attributes:
-	// gl_FrontMaterial.shininess	: float : specular exponential term of the current shaded material (same below)
-	// gl_FrontMaterial.ambient     : vec4  : ambient reflective factor
-	// gl_FrontMaterial.diffuse     : vec4  : diffuse reflective factor
-    // gl_FrontMaterial.specular    : vec4  : specular reflective factor
-    // gl_FrontLightModelProduct.sceneColor : vec4 : the product of the ambient material property 
-    //                          for front-facing surfaces and the global ambient light for the scene.
+// Built-in variables and states that are useful:
+//
+// Light attributes:
+// gl_LightSource[i].position	: vec4	: position of lightsource i (same below)
+// gl_LightSource[i].ambient	: vec4	: ambient contribution
+// gl_LightSource[i].diffuse	: vec4	: diffuse contribution
+// gl_LightSource[i].specular	: vec4	: specular contribution
+//
+// Material attributes:
+// gl_FrontMaterial.shininess	: float : specular exponential term of the current shaded material (same below)
+// gl_FrontMaterial.ambient     : vec4  : ambient reflective factor
+// gl_FrontMaterial.diffuse     : vec4  : diffuse reflective factor
+// gl_FrontMaterial.specular    : vec4  : specular reflective factor
+// gl_FrontLightModelProduct.sceneColor : vec4 : the product of the ambient material property 
+//                          for front-facing surfaces and the global ambient light for the scene.
 
 void pointLight(in int i, in vec3 normal, in vec3 eye, in vec3 ecPosition3)
 {
@@ -39,9 +39,31 @@ void pointLight(in int i, in vec3 normal, in vec3 eye, in vec3 ecPosition3)
     //   normal: eye(view) space surface normal at the shaded vertex
     //   eye: eye(view) space camera position
     //   ecPosition3: eye(view) space position of the shaded vertex
-    Ambient  += 0;
-    Diffuse  += 0;
-    Specular += 0;
+
+    /****************************************/
+    /*************** MODIFIED ***************/
+
+    // Init
+    float attenuation;      // attenuation factor
+    vec3 vLightSource;      // direction to the light source (unit vector)
+    vec3 halfVector;        // Half vector defined by the *Blinn-Phong model*
+
+    // Diffuse: Compute the direction from surface to the light source
+    vLightSource = vec3(gl_LightSource[i].position) - ecPosition3
+    vLightSource = normalize(vLightSource);
+
+    // Specular: Compute the half-vector
+    halfVector = normal(eye + vLightSource);
+
+    // TODO: light attenuation woth distance
+    attenuation = 1.0;
+
+    // Return
+    Ambient  += gl_LightSource[i].ambient;
+    Diffuse  += attenuation * gl_LightSource[i].diffuse * max(0.0, dot(normal, vLightSource));
+    Specular += attenuation * gl_LightSource[i].specular * max(0.0, dot(normal, halfVector));
+
+    /****************************************/
 }
 
 void main()
