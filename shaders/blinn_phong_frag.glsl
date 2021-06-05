@@ -137,6 +137,6 @@ void main()
     color = clamp( color, 0.0, 1.0 );
     
     // Output color
-    gl_FrontColor = color;
+    gl_FragColor = color;
     /****************************************/
 }
