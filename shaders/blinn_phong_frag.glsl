@@ -122,14 +122,13 @@ void main()
     pointLight(0, n, eye, ecPosition3);
     pointLight(1, n, eye, ecPosition3);
 
+    // Phong Illumination
     // Step 1: Add ambient and diffuse contributions
     vec4 color = gl_FrontLightModelProduct.sceneColor +
                  gl_FrontMaterial.ambient * Ambient +
                  gl_FrontMaterial.diffuse * Diffuse;
-
     // Step 2: Perform the texture lookup
-    color = color * texture2D(colorMap, gl_TexCoord[0].st);
-
+    color *= texture2D(colorMap, gl_TexCoord[0].st);
     // Step 3: Adding the specular component
     color += gl_FrontMaterial.specular * Specular;
 
