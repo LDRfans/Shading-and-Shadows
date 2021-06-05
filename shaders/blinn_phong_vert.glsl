@@ -43,6 +43,44 @@ void pointLight(in int i, in vec3 normal, in vec3 eye, in vec3 ecPosition3)
     /****************************************/
     /*************** MODIFIED ***************/
 
+    float nDotVP;       // normal . light direction
+    float nDotHV;       // normal . light half vector
+    float pf;           // power factor
+    float attenuation;  // computed attenuation factor
+    float d;            // distance from surface to light source
+    vec3  VP;           // direction from surface to light position
+    vec3  halfVector;   // direction of maximum highlights (Half vector defined by the *Blinn-Phong model*)
+
+    // Diffuse: Compute the direction from surface to the light source
+    // Compute vector from surface to light position
+    VP = vec3 (gl_LightSource[i].position) - ecPosition3;
+    // Compute distance between surface and light position
+    d = length(VP);
+    // Normalize the vector from surface to light position
+    VP = normalize(VP);
+
+    // Compute attenuation
+    attenuation = 1.0;
+    // attenuation = 1.0 / (gl_LightSource[i].constantAttenuation +
+    //     gl_LightSource[i].linearAttenuation * d +
+    //     gl_LightSource[i].quadraticAttenuation * d * d);
+
+    // Specular: Compute the half-vector
+    halfVector = normalize(VP + eye);
+
+    nDotVP = max(0.0, dot(normal, VP));
+    nDotHV = max(0.0, dot(normal, halfVector));
+
+    // Specular: Computer the specular reflection
+    pf = (nDotVP == 0.0) ? 0.0 : pow(nDotHV, gl_FrontMaterial.shininess);
+
+    // Return
+    Ambient  += gl_LightSource[i].ambient * attenuation;
+    Diffuse  += gl_LightSource[i].diffuse * nDotVP * attenuation;
+    Specular += gl_LightSource[i].specular * pf * attenuation;
+
+    /*************** VERSION 1 ***************/
+    /*
     // Init
     float attenuation;      // attenuation factor
     float specularRef;      // specular reflection
@@ -70,8 +108,8 @@ void pointLight(in int i, in vec3 normal, in vec3 eye, in vec3 ecPosition3)
     Ambient  += gl_LightSource[i].ambient;
     Diffuse  += attenuation * gl_LightSource[i].diffuse * max(0.0, dot(normal, vLightSource));
     Specular += attenuation * gl_LightSource[i].specular * specularRef;
-
-    /****************************************/
+    */
+    /*****************************************/
 }
 
 void main()
