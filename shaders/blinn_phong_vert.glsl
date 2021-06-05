@@ -45,15 +45,23 @@ void pointLight(in int i, in vec3 normal, in vec3 eye, in vec3 ecPosition3)
 
     // Init
     float attenuation;      // attenuation factor
+    float specularRef;      // specular reflection
     vec3 vLightSource;      // direction to the light source (unit vector)
     vec3 halfVector;        // Half vector defined by the *Blinn-Phong model*
 
     // Diffuse: Compute the direction from surface to the light source
-    vLightSource = vec3(gl_LightSource[i].position) - ecPosition3
+    vLightSource = vec3(gl_LightSource[i].position) - ecPosition3;
     vLightSource = normalize(vLightSource);
 
     // Specular: Compute the half-vector
     halfVector = normal(eye + vLightSource);
+    // Specular: Computer the specular reflection factor
+    if (dot(normal, halfVector) > 0.0){
+        specularRef = pow(dot(normal, halfVector), gl_FrontMaterial.shininess);
+    }
+    else{
+        specularRef = 0.0;
+    }
 
     // TODO: light attenuation woth distance
     attenuation = 1.0;
@@ -61,7 +69,7 @@ void pointLight(in int i, in vec3 normal, in vec3 eye, in vec3 ecPosition3)
     // Return
     Ambient  += gl_LightSource[i].ambient;
     Diffuse  += attenuation * gl_LightSource[i].diffuse * max(0.0, dot(normal, vLightSource));
-    Specular += attenuation * gl_LightSource[i].specular * max(0.0, dot(normal, halfVector));
+    Specular += attenuation * gl_LightSource[i].specular * specularRef;
 
     /****************************************/
 }
