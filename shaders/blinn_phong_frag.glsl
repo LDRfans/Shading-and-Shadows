@@ -17,7 +17,9 @@ void main()
 	
 	// TODO(4): add an non-trivial interesting animation to the model 
 	//       by changing "vAnimatedPos" using a function of "g_fFrameTime"
-	vec4 vAnimatedPos = gl_Vertex;
+	vAnimatedPos.x += sin(g_fFrameTime/300.0 + vAnimatedPos.x * 5)*0.02 
+					* (cos(clamp(vAnimatedPos.x*2, -1, 1)*3.1416)*0.5+0.5)
+					+ sin(g_fFrameTime/2000.0)*0.3;
 
     // Eye-coordinate position of vertex, needed in lighting computation
     ecPosition = gl_ModelViewMatrix * vAnimatedPos;
