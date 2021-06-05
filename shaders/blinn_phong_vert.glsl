@@ -55,7 +55,7 @@ void pointLight(in int i, in vec3 normal, in vec3 eye, in vec3 ecPosition3)
 
     // Specular: Compute the half-vector
     halfVector = normal(eye + vLightSource);
-    // Specular: Computer the specular reflection factor
+    // Specular: Computer the specular reflection
     if (dot(normal, halfVector) > 0.0){
         specularRef = pow(dot(normal, halfVector), gl_FrontMaterial.shininess);
     }
@@ -96,7 +96,10 @@ void main()
     pointLight(1, normal, eye, ecPosition3);
         
     // TODO(1): Add ambient, diffuse and specular contributions to equation below.
-    vec4 color = gl_FrontLightModelProduct.sceneColor + 0;
+    vec4 color = gl_FrontLightModelProduct.sceneColor +
+                 gl_FrontMaterial.ambient * Ambient +
+                 gl_FrontMaterial.diffuse * Diffuse +
+                 gl_FrontMaterial.specular * Specular;
         
 	// Clamp color to [0, 1]
     color = clamp( color, 0.0, 1.0 );
@@ -118,5 +121,6 @@ void main()
     // TODO(2): sample the texture color from "colorMap" using the 
     //       passed down texture coordinate gl_TexCoord[0], and
     //       modulate the interpolated lighting color by it.
-    gl_FragColor = gl_Color;
+    // gl_FragColor = gl_Color;
+    gl_FragColor = gl_Color * texture2D(colorMap, gl_TexCoord[0].st);
 }
