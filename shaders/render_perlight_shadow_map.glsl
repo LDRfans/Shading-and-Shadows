@@ -112,6 +112,14 @@ void main()
     //    Hint: Compare with the tolerance "shadowZOffset"
     //          to avoid shadow acnes in self shadowing
 
+    // 1) homogeneity
+    vec4 shadowMapCoord = shadowCoord / shadowCoord.w;
+    // 2) fetch depth
+	float depth = texture2D(shadowMap, shadowMapCoord.xy).z;
+    // 3) shadow map logic
+	if(shadowMapCoord.z - depth > shadowZOffset) {
+		shadow = 0.0;
+	}
 
 
     vec4 color = Diffuse * gl_FrontMaterial.diffuse;
