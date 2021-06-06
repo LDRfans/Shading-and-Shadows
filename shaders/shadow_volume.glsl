@@ -80,15 +80,15 @@ void DetectAndProcessSilhouette( vec3 N,          // triangle normal (Un-normali
     // 4) Extrude a quad from the silhouette edge in the 
     //    direction away from the light to infinity.
     vec4 q0 = vec4(v1, 1);
-	vec4 q1 = vec4(v2, 1);
-	vec4 q2 = vec4(v1 + v1 - lightPos, 0);
-	vec4 q3 = vec4(v2 + v2 - lightPos, 0);
-
-	gl_Position = gl_ProjectionMatrix*q0; EmitVertex();
-	gl_Position = gl_ProjectionMatrix*q1; EmitVertex();
-	gl_Position = gl_ProjectionMatrix*q2; EmitVertex();
-	gl_Position = gl_ProjectionMatrix*q3; EmitVertex();
-	EndPrimitive();
+    vec4 q1 = vec4(v2, 1);
+    vec4 q2 = vec4(v1 + v1 - lightPos, 0);
+    vec4 q3 = vec4(v2 + v2 - lightPos, 0);
+    
+    gl_Position = gl_ProjectionMatrix*q0; EmitVertex();
+    gl_Position = gl_ProjectionMatrix*q1; EmitVertex();
+    gl_Position = gl_ProjectionMatrix*q2; EmitVertex();
+    gl_Position = gl_ProjectionMatrix*q3; EmitVertex();
+    EndPrimitive();
 }
 
 void main()
