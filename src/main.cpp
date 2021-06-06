@@ -285,6 +285,34 @@ void SetupShadowMapPOVMatrices(GLfloat lightPosition[])
     //    Take a look at the "SetTransformMatrices" function for normal rendering
     //    if you are not familiar with OpenGL transformation functions.
 
+	// 1) Compute FOV
+	// cout << xpan <<"," << ypan <<","<< -sdepth << endl;
+	// cout << g_model.getRadius() << endl;
+	double dof = sqrt(pow((lightPosition[0] - xpan), 2) + pow((lightPosition[1] - ypan), 2) + pow((lightPosition[2] + sdepth), 2));
+	double objectCenter2objectEdge = g_model.getRadius();
+	double pi = 3.1415926;
+	double fov = asin(objectCenter2objectEdge / dof) * 180/pi;
+
+	// 2) Set the projection matrix
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	gluPerspective(fov, winAspect, zNear, zFar);
+
+	// 3) Set the model*view matrix
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	// view matrix: world to light (eye, cam) - gluLookAt
+	gluLookAt(lightPosition[0], lightPosition[1], lightPosition[2], xpan, ypan, -sdepth, 0.0, 1.0, 0.0);
+
+	// do we need to do scale? - no?
+	glScalef(1.0 / g_model.getRadius(), 1.0 /g_model.getRadius(), 1.0/g_model.getRadius());
+
+	// model matrix: object to world
+	glTranslatef(xpan, ypan, -sdepth);
+	glRotatef(-stheta, 1.0, 0.0, 0.0);
+	glRotatef(sphi, 0.0, 0.0, 1.0);
+	glTranslatef(-g_center[0], -g_center[1], -g_center[2]);
+
 }
 
 // Setup the light PoV transformation matrix for the shadow shading pass
@@ -302,6 +330,13 @@ void SetupShadowMapTextureMatrix(GLfloat lightModelView[], GLfloat lightProjecti
     //       The matrices that we use for the shadow map pass
     //       are given. 
 
+	glLoadIdentity();
+	// Translate [-1,1] to [0,2] first, then scale it with 0.5 so that we get [0,1].
+	glScalef(0.5, 0.5, 0.5);
+	glTranslatef(1, 1, 1);
+	// Shadow map projection*model*view
+	glMultMatrixf(lightProjection);
+	glMultMatrixf(lightModelView);
 
     // After setting GL_TEXTURE matrix, go back to normal matrix mode
     glMatrixMode(GL_MODELVIEW);
@@ -317,9 +352,11 @@ void SetTransformMatrices()
 	// Set the model*view matrix
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity(); 
+
 	glTranslatef(xpan, ypan, -sdepth);
 	glRotatef(-stheta, 1.0, 0.0, 0.0);
 	glRotatef(sphi, 0.0, 0.0, 1.0);
+
 	glTranslatef(-g_center[0], -g_center[1], -g_center[2]);
 }
 
