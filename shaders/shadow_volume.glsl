@@ -66,6 +66,29 @@ void DetectAndProcessSilhouette( vec3 N,          // triangle normal (Un-normali
     //    | /    |
     //    1 ---- 3
 
+    // 1) Compute normal of the adjacent triangle
+    vec3 v3 = vAdj.xyz;
+    vec3 sharedEdge = v2-v1;
+    vec3 adjEdge = v3-v1;
+    // 2) Determine if current and adjacent triangle are facing the lightIndex
+    vec3 adjN = cross(adjEdge, sharedEdge);
+    vec3 sharedEdgeCenter = (v1+v2)/2;
+    vec3 egdeCenter2Light = lightPos-sharedEdgeCenter;
+    // 3) Determine if sharedEgde is a sihouette: not a sihouette: w!=0 and (triangle is not facing the light and the adjacent is fa 
+    if (vAdj.w != 0 && (dot(N, egdeCenter2Light) <= 0 || dot(adjN, egdeCenter2Light) >= 0)) {return;}
+
+    // 4) Extrude a quad from the silhouette edge in the 
+    //    direction away from the light to infinity.
+    vec4 q0 = vec4(v1, 1);
+	vec4 q1 = vec4(v2, 1);
+	vec4 q2 = vec4(v1 + v1 - lightPos, 0);
+	vec4 q3 = vec4(v2 + v2 - lightPos, 0);
+
+	gl_Position = gl_ProjectionMatrix*q0; EmitVertex();
+	gl_Position = gl_ProjectionMatrix*q1; EmitVertex();
+	gl_Position = gl_ProjectionMatrix*q2; EmitVertex();
+	gl_Position = gl_ProjectionMatrix*q3; EmitVertex();
+	EndPrimitive();
 }
 
 void main()
